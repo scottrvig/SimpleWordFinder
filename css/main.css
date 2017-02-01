@@ -28,17 +28,17 @@ html * {
 }
 
 #word-input {
-    display: block;
+	display: block;
 	width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    border-color: #3498db;
-    box-sizing: border-box;
+	padding: 12px 20px;
+	margin: 8px 0;
+	border-color: #3498db;
+	box-sizing: border-box;
 	border-radius: 5px;
 }
 
 .go-button {
-    background: #3498db;
+	background: #3498db;
     background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
     background-image: -moz-linear-gradient(top, #3498db, #2980b9);
     background-image: -ms-linear-gradient(top, #3498db, #2980b9);

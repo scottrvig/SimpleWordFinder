@@ -2,10 +2,10 @@ var words = [];
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 function loadWords() {
-    // Load the words from resources, if it is not already cached.
-    if (words.length > 0) { return words; }
+	// Load the words from resources, if it is not already cached.
+	if (words.length > 0) { return words; }
 
-    $.get("resources/words.txt", function(data) {
+	$.get("resources/words.txt", function(data) {
 		words = data.split('\n');
 		words.pop(); // Last element is empty string
 	}, 'text');
@@ -13,12 +13,12 @@ function loadWords() {
 
 
 function getHooks(word) {
-    // Return all elgible words that are +1 letter to the candidate word.
-    var hooks = [];
+	// Return all elgible words that are +1 letter to the candidate word.
+	var hooks = [];
 	var candidates = [];
-    var allWords = loadWords();
+	var allWords = loadWords();
 
-    for (var i in alphabet) {
+	for (var i in alphabet) {
 		candidates.push(alphabet[i].concat(word));
 		candidates.push(word.concat(alphabet[i]));
 	}
@@ -28,48 +28,48 @@ function getHooks(word) {
 			hooks.push(candidates[i]);
 	}
 
-    return hooks;
+	return hooks;
 }
 
 
 function getWords(input) {
-    // Return all words that can be created from the letters
+	// Return all words that can be created from the letters
 	// of the provided string. '?' is a wildcard character.
-    var words = [];
-    var allWords = loadWords();
+	var words = [];
+	var allWords = loadWords();
 
 	// Only need words that are size of the input or less.
-    candidateWords = allWords.filter(function (element) {
-        return (element.length <= input.length);
-    });
+	candidateWords = allWords.filter(function (element) {
+		return (element.length <= input.length);
+	});
 
-    for (var i in candidateWords) {
-        var candidateWord = candidateWords[i];
-        var candidateLetters = candidateWord.split('');
-        var inputLetters = input.split('');
-        if (isComposeable(candidateLetters, inputLetters)){
-            words.push(candidateWord);
-        }
-    }
+	for (var i in candidateWords) {
+		var candidateWord = candidateWords[i];
+		var candidateLetters = candidateWord.split('');
+		var inputLetters = input.split('');
+		if (isComposeable(candidateLetters, inputLetters)) {
+			words.push(candidateWord);
+		}
+	}
     
-    return words;
+	return words;
 }
 
 
 function isComposeable(candidateLetters, inputLetters) {
-    // Return true if all of the candidate word letters are
+	// Return true if all of the candidate word letters are
 	// contained in the input letters (plus wildcards).
-    for (var i = 0; i < candidateLetters.length; i++) {
+	for (var i = 0; i < candidateLetters.length; i++) {
 		letter = candidateLetters[i];
 
-        index = inputLetters.indexOf(candidateLetters[i]);
-        if (index > -1) {
+		index = inputLetters.indexOf(candidateLetters[i]);
+		if (index > -1) {
 			// Exact letter match, remove from input list
-            inputLetters.splice(index, 1);
-        } else {
+			inputLetters.splice(index, 1);
+		} else {
 			// No exact letter match, check for wildcards
-            wildCardIndex = inputLetters.indexOf('?');
-            if (wildCardIndex > -1) {
+			wildCardIndex = inputLetters.indexOf('?');
+			if (wildCardIndex > -1) {
 				// Wildcard match, remove from input list
 				inputLetters.splice(wildCardIndex, 1);
 			} else {
@@ -79,15 +79,15 @@ function isComposeable(candidateLetters, inputLetters) {
 		}
 	}
 
-    return true; 
+	return true; 
 }
 
 
 function getQWithoutU() {
-    // Return a list of Q without U words
-    var allWords = loadWords();
+	// Return a list of Q without U words
+	var allWords = loadWords();
 
-    return allWords.filter(function (element) {
+	return allWords.filter(function (element) {
 		var qIndex = element.indexOf('q');
 		if (qIndex == -1)
 			return false;
@@ -99,15 +99,15 @@ function getQWithoutU() {
 			var nextChar = element.charAt(qIndex + 1);
 			return (nextChar != 'u');
 		}
-    });
+	});
 }
 
 
 function get2LetterWords() {
-    // Return a list of 2 letter words
+	// Return a list of 2 letter words
 	var allWords = loadWords();
 	return allWords.filter(function (element) {
-		   return (element.length == 2);
+		return (element.length == 2);
 	});
 }
 
@@ -145,8 +145,8 @@ function tooManyQuestionMarks(inputCharacters) {
 	var count = 0;
 	
 	for (var i = 0; i < inputCharacters.length; i++) {
-		if (inputCharacters[i] == '?')
-			count++;
+	if (inputCharacters[i] == '?')
+		count++;
 	}
 	
 	return (count > 3);
@@ -160,7 +160,7 @@ function fillTable(result, inputSize) {
 
 	result.sort(function(a, b) {
 		return b.length - a.length ||
-			   a.localeCompare(b);
+			a.localeCompare(b);
 	});
 
 	$("#result-table tr").remove();

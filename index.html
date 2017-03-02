@@ -1,93 +1,91 @@
 <!DOCTYPE html>
 
 <html lang="en">
-	<head>
-	<meta charset="utf-8" />
-	<title>WordTools</title>
-	<script src="js/jquery-1.12.3.min.js"></script>
-	<script src="js/wordtools.js"></script>
-	<script src="js/jquery-confirm.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/jquery-confirm.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-	<script>
-	function generateWords(input) {
-		var result = [];
-		var select = document.getElementById('input-selector').value;
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple Word Finder</title>
+        <script src="js/jquery-1.12.3.min.js"></script>
+        <script src="js/wordtools.js"></script>
+        <script src="js/jquery-confirm.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/jquery-confirm.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <script>
+            function generateWords(input) {
+                var select = document.getElementById('input-selector').value;
 
-		if (!input && (select == "1" || select == "2"))
-			return [];
+                if (!input && (select == "1" || select == "2"))
+                    return;
 
-		switch (select) {
-			case "1":
-				if (checkInput(input, true))
-					result = getWords(input);
-			break;
-			case "2":
-				if (checkInput(input, false))
-					result = getHooks(input);
-			break;
-			case "3":
-				result = getQWithoutU();
-				break;
-			case "4":
-				result = get2LetterWords();
-				break;
-		}
-		return result;
-	}
-	</script>
-	</head>
-	<body onload="loadWords()">
-		<div class="entry-section">
-			<div class="input-row">
-				<input id="word-input" type-"text" placeholder="Enter some letters..." onkeydown="solve(false, event);"></input>
-			</div>
-			<div class="button-row">
-				<div id="wildcard-help">Use up to three ?'s for wildcards</div>
-				<select id="input-selector">
-					<option value="1">Words</option>
-					<option value="2">Hooks</option>
-					<option value="3">Q Without U</option>
-					<option value="4">2 Letter Words</option>
-				</select>
-				<button class="go-button" type="button" onclick="solve(true, event);">Solve</button> 
-				<img id="solve-wheel" style="visibility:hidden" src="resources/solve_wheel.gif"/>
-			</div>
-		</div>
-		<div class="result-section">
-			<table id="result-table"></table>
-		</div>
-	</body>
-	<script>
-	function solve(force, evt) {
-		if ((evt.keyCode == 13) || force) {
-			$("body").trigger('Custom.Start');
-			setTimeout(function() {
-				try {
-					var solveWheel = document.getElementById('solve-wheel');
-					var input = $.trim(document.getElementById('word-input').value.toLowerCase());
-					var result = generateWords(input);
-					fillTable(result, input.length);
-				} finally {
-					$("body").trigger('Custom.End');
+                switch (select) {
+                    case "1":
+                        if (!checkInput(input, true))
+                            return;
+                        var op = "php/getwords.php?q=" + input;
+                        break;
+                    case "2":
+                        if (!checkInput(input, false))
+                            return;
+                        var op = "php/gethooks.php?q=" + input;
+                        break;
+                    case "3":
+                        var op = "php/getqwithoutu.php";
+                        break;
+                    case "4":
+                        var op = "php/get2letterwords.php";
+                        break;
 				}
-			},  50);
-		}
-	}
-	
-	$("body").bind('Custom.Start', function(ev) {
-		document.getElementById('solve-wheel').style.visibility = "visible";
-	});
 
-	$("body").bind('Custom.End', function(ev) {
-		document.getElementById('solve-wheel').style.visibility = "hidden";
-	});
+                $.ajax({
+                    url: op,
+                    type: "GET",
+                    timeout: 10000,
+                    beforeSend: function() {
+                        document.getElementById('solve-wheel').style.visibility = "visible";
+                    },
+                    complete: function() {
+                        document.getElementById('solve-wheel').style.visibility = "hidden";
+                    },
+                    success: function(data) {
+                        fillTable(data, input.length);
+                    },
+                });
+            }
+        </script>
+    </head>
+    <body>
+    <div class="entry-section">
+        <div class="input-row">
+            <input id="word-input" type-"text" placeholder="Enter some letters..." onkeydown="solve(false, event);"></input>
+        </div>
+            <div class="button-row">
+                <div id="wildcard-help">Use up to three ?'s for wildcards</div>
+                <select id="input-selector">
+                    <option value="1">Words</option>
+                    <option value="2">Hooks</option>
+                    <option value="3">Q Without U</option>
+                    <option value="4">2 Letter Words</option>
+                </select>
+                <button class="go-button" type="button" onclick="solve(true, event);">Solve</button>
+                <img id="solve-wheel" style="visibility:hidden" src="resources/solve_wheel.gif"/>
+            </div>
+        </div>
+        <div class="result-section">
+            <table id="result-table"></table>
+        </div>
+    </body>
+	<script>
+        function solve(force, evt) {
+            if ((evt.keyCode == 13) || force) {
+                var input = $.trim(document.getElementById('word-input').value.toLowerCase());
+                generateWords(input);
+            }
+        }
 
-	$("#input-selector").change(function() {
-		if ($('select[id=input-selector]').val() == "1")
-			document.getElementById('wildcard-help').style.visibility = "visible";
-		else
-			document.getElementById('wildcard-help').style.visibility = "hidden";
-	});
-	</script>
+        $("#input-selector").change(function() {
+        if ($('select[id=input-selector]').val() == "1")
+            document.getElementById('wildcard-help').style.visibility = "visible";
+        else
+            document.getElementById('wildcard-help').style.visibility = "hidden";
+        });
+    </script>
 </html>

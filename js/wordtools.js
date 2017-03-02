@@ -43,41 +43,49 @@ function tooManyQuestionMarks(inputCharacters) {
 
 
 function fillTable(result, inputSize) {
-	// Fill the table columns with the result word array
-	// If the candidate word is the same size as inputSize, emphasize the word
-	var NUM_COLUMNS = 5;
+    // Fill the table columns with the result word array
+    // If the candidate word is the same size as inputSize, emphasize the word
+    var NUM_COLUMNS = 5;
 
-	result.sort(function(a, b) {
-		return b.length - a.length || a.localeCompare(b);
-	});
+    $("#result-table tr").remove();
+    if (result.length == 0) {
+        row = '<tr><td><i><b>No results were found</b></i></td></tr>'
+        $("#result-table").append(row);
+        return;
+    }
 
-	$("#result-table tr").remove();
-	if (result.length == 0) {
-		row = '<tr><td><i><b>No results were found</b></i></td></tr>'
-		$("#result-table").append(row);
-		return;
-	}
+    // Sort by descending size, then alphabetical as tie-break
+    result.sort(function(a, b) {
+        return b.length - a.length || a.localeCompare(b);
+    });
 
-	var rows = [];
-	while (result.length)
-		rows.push(result.splice(0, NUM_COLUMNS));
+    var rows = [];
+    while (result.length)
+        rows.push(result.splice(0, NUM_COLUMNS));
 
-	for (var i = 0; i < rows.length; i++) {
-		var row = '<tr>';
-		for (var j =0; j < NUM_COLUMNS; j++) {
-			row += '<td width="20%">';
-			var elem = rows[i][j];
-			if (!elem)
-				elem = '';
+    var fillRows = function() {
+        var row = rows.shift();
+        var rowString = '<tr>';
+        for (var i = 0; i < NUM_COLUMNS; i++) {
+            rowString += '<td width="20%">';
+            var elem = row[i];
+            if (!elem)
+                elem = '';
 
-			if (elem.length == inputSize)
-				elem = '<b><i>' + elem + '</i></b>';
-			row += elem;
-			row += '</td>';
-		}
-		row += '</tr>';
-		$("#result-table").append(row);
-	}
+            if (elem.length == inputSize)
+                elem = '<b><i>' + elem + '</i></b>';
+            rowString += elem;
+            rowString += '</td>';
+        }
+        rowString += '</tr>';
+        $("#result-table").append(rowString);
+
+        if (rows.length > 0) {
+            setTimeout(fillRows, 0);
+        }
+    }
+
+    fillRows();
 }
 
 

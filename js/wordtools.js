@@ -1,4 +1,5 @@
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+var timeoutId = null;
 
 
 function checkInput(input, allowWildcards) {
@@ -47,6 +48,12 @@ function fillTable(result, inputSize) {
     // If the candidate word is the same size as inputSize, emphasize the word
     var NUM_COLUMNS = 5;
 
+    // Clear any existing timers, ensure only one thread is running
+    if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+    }
+
     $("#result-table tr").remove();
     if (result.length == 0) {
         row = '<tr><td><i><b>No results were found</b></i></td></tr>'
@@ -81,7 +88,7 @@ function fillTable(result, inputSize) {
         $("#result-table").append(rowString);
 
         if (rows.length > 0) {
-            setTimeout(fillRows, 0);
+            timeoutId = setTimeout(fillRows, 0);
         }
     }
 
